@@ -1,24 +1,82 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import * as Location from 'expo-location';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect, useState } from 'react';
+import { Alert, BackHandler } from 'react-native';
+import { AuthProvider } from '../context/AuthContext';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const [loaded] = useFonts({
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  });
+  const [permissionsGranted, setPermissionsGranted] = useState(false);
+
+  useEffect(() => {
+    async function requestPermissions() {
+      try {
+        // Request Location Permission
+        const { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
+
+        if (locationStatus !== 'granted') {
+          Alert.alert(
+            'Permission Required',
+            'Location permission is required to use this app. The app will now close.',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  BackHandler.exitApp();
+                },
+              },
+            ],
+            { cancelable: false }
+          );
+          return;
+        }
+
+        // All permissions granted
+        setPermissionsGranted(true);
+      } catch (error) {
+        Alert.alert(
+          'Error',
+          'Failed to request permissions. The app will now close.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                BackHandler.exitApp();
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+    }
+
+    requestPermissions();
+  }, []);
+
+  useEffect(() => {
+    if (loaded && permissionsGranted) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, permissionsGranted]);
+
+  if (!loaded || !permissionsGranted) {
+    return null;
+  }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <AuthProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        <Stack.Screen name="+not-found" />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    </AuthProvider>
   );
 }
