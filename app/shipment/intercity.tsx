@@ -57,7 +57,7 @@ export default function InterCityDeliveryScreen() {
 
                 {/* Info Banner */}
                 <View style={styles.infoBanner}>
-                    <Text style={styles.infoText}>ℹ️ Delivery takes 2-4 business days</Text>
+                    <Text style={styles.infoText}>ℹ️ Delivery takes 4-8 business days</Text>
                 </View>
 
                 {/* Progress Bar */}

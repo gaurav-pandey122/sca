@@ -91,7 +91,7 @@ export default function StandardDeliveryScreen() {
                                     ]}
                                     onPress={() => setDropOffType('hub')}
                                 >
-                                    <Text style={[styles.chipText, dropOffType === 'hub' && { color: '#fff' }]}>🏢 Drop to Hubs</Text>
+                                    <Text style={[styles.chipText, dropOffType === 'hub' && { color: '#fff' }]}>🏢 Drop to Hub</Text>
                                 </TouchableOpacity>
                             </View>
 
