@@ -27,11 +27,15 @@ export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Check for persisted user session on mount (mocked)
+    // Check for persisted user session on mount
     useEffect(() => {
-        // Check storage for token
+        // Simulate checking for stored token
+        setTimeout(() => {
+            // No stored auth, user stays null
+            setIsLoading(false);
+        }, 500);
     }, []);
 
     const signIn = (email: string, password: string) => {

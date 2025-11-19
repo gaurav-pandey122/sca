@@ -63,7 +63,11 @@ export default function RentVehicleScreen() {
                     <View style={[styles.progressBar, { width: `${(step / totalSteps) * 100}%`, backgroundColor: Colors.light.primary }]} />
                 </View>
 
-                <ScrollView contentContainerStyle={GlobalStyles.container}>
+                <ScrollView
+                    contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
                     <Text style={styles.stepTitle}>
                         {step === 1 ? 'Select Vehicle & Duration' : 'Summary'}
                     </Text>
@@ -113,6 +117,7 @@ export default function RentVehicleScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="YYYY-MM-DD"
+                                placeholderTextColor="#999"
                                 value={startDate}
                                 onChangeText={setStartDate}
                             />

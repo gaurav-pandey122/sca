@@ -53,7 +53,11 @@ export default function CreateShipmentScreen() {
                     </Text>
                 </View>
 
-                <ScrollView contentContainerStyle={GlobalStyles.container}>
+                <ScrollView
+                    contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
                     <Text style={styles.stepTitle}>
                         {step === 1 ? 'Pickup Details' :
                             step === 2 ? 'Delivery Details' :
@@ -66,6 +70,7 @@ export default function CreateShipmentScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Enter name"
+                                placeholderTextColor="#999"
                                 value={pickup.name}
                                 onChangeText={(t) => setPickup({ ...pickup, name: t })}
                             />
@@ -74,6 +79,7 @@ export default function CreateShipmentScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Enter phone"
+                                placeholderTextColor="#999"
                                 keyboardType="phone-pad"
                                 value={pickup.phone}
                                 onChangeText={(t) => setPickup({ ...pickup, phone: t })}
@@ -106,6 +112,7 @@ export default function CreateShipmentScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Enter name"
+                                placeholderTextColor="#999"
                                 value={delivery.name}
                                 onChangeText={(t) => setDelivery({ ...delivery, name: t })}
                             />
@@ -113,6 +120,7 @@ export default function CreateShipmentScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Enter phone"
+                                placeholderTextColor="#999"
                                 keyboardType="phone-pad"
                                 value={delivery.phone}
                                 onChangeText={(t) => setDelivery({ ...delivery, phone: t })}
@@ -183,6 +191,7 @@ export default function CreateShipmentScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="e.g. 2.5"
+                                placeholderTextColor="#999"
                                 keyboardType="numeric"
                                 value={packageDetails.weight}
                                 onChangeText={(t) => setPackageDetails({ ...packageDetails, weight: t })}

@@ -1,7 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/Colors';
 import { GlobalStyles } from '../../constants/Styles';
@@ -57,53 +57,63 @@ export default function EditProfileScreen() {
                 <View style={{ width: 24 }} />
             </View>
 
-            <ScrollView contentContainerStyle={styles.container}>
-                {/* Avatar */}
-                <View style={styles.avatarSection}>
-                    <TouchableOpacity onPress={pickImage}>
-                        <View style={styles.avatar}>
-                            {image ? (
-                                <Image source={{ uri: image }} style={styles.avatarImage} />
-                            ) : (
-                                <Text style={styles.avatarText}>G</Text>
-                            )}
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.changePhotoButton} onPress={pickImage}>
-                        <Text style={styles.changePhotoText}>Change Photo</Text>
-                    </TouchableOpacity>
-                </View>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}
+                keyboardVerticalOffset={100}
+            >
+                <ScrollView
+                    contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
+                    {/* Avatar */}
+                    <View style={styles.avatarSection}>
+                        <TouchableOpacity onPress={pickImage}>
+                            <View style={styles.avatar}>
+                                {image ? (
+                                    <Image source={{ uri: image }} style={styles.avatarImage} />
+                                ) : (
+                                    <Text style={styles.avatarText}>G</Text>
+                                )}
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.changePhotoButton} onPress={pickImage}>
+                            <Text style={styles.changePhotoText}>Change Photo</Text>
+                        </TouchableOpacity>
+                    </View>
 
-                {/* Form */}
-                <View style={styles.form}>
-                    <Text style={styles.label}>Full Name</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Enter your name"
-                        value={name}
-                        onChangeText={setName}
-                    />
+                    {/* Form */}
+                    <View style={styles.form}>
+                        <Text style={styles.label}>Full Name</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter your name"
+                            value={name}
+                            onChangeText={setName}
+                        />
 
-                    <Text style={styles.label}>Email</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Enter your email"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                    />
+                        <Text style={styles.label}>Email</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter your email"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
 
-                    <Text style={styles.label}>Phone Number</Text>
-                    <TextInput
-                        style={[styles.input, styles.disabledInput]}
-                        placeholder="Phone number"
-                        value={phone}
-                        editable={false}
-                    />
-                    <Text style={styles.helperText}>Phone number cannot be changed</Text>
-                </View>
-            </ScrollView>
+                        <Text style={styles.label}>Phone Number</Text>
+                        <TextInput
+                            style={[styles.input, styles.disabledInput]}
+                            placeholder="Phone number"
+                            value={phone}
+                            editable={false}
+                        />
+                        <Text style={styles.helperText}>Phone number cannot be changed</Text>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
 
             {/* Save Button */}
             <View style={styles.footer}>

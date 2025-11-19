@@ -65,7 +65,11 @@ export default function InterCityDeliveryScreen() {
                     <View style={[styles.progressBar, { width: `${(step / totalSteps) * 100}%`, backgroundColor: Colors.light.primary }]} />
                 </View>
 
-                <ScrollView contentContainerStyle={GlobalStyles.container}>
+                <ScrollView
+                    contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
                     <Text style={styles.stepTitle}>
                         {step === 1 ? 'Pickup Details' :
                             step === 2 ? 'Delivery Details' :
@@ -78,6 +82,7 @@ export default function InterCityDeliveryScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Enter name"
+                                placeholderTextColor="#999"
                                 value={pickup.name}
                                 onChangeText={(t) => setPickup({ ...pickup, name: t })}
                             />
@@ -86,6 +91,7 @@ export default function InterCityDeliveryScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Enter phone"
+                                placeholderTextColor="#999"
                                 keyboardType="phone-pad"
                                 value={pickup.phone}
                                 onChangeText={(t) => setPickup({ ...pickup, phone: t })}
@@ -106,6 +112,7 @@ export default function InterCityDeliveryScreen() {
                             <TextInput
                                 style={[styles.input, { height: 80, textAlignVertical: 'top', paddingTop: 12 }]}
                                 placeholder="Enter full address (Street, Area)"
+                                placeholderTextColor="#999"
                                 multiline
                                 value={pickup.address}
                                 onChangeText={(t) => setPickup({ ...pickup, address: t })}
@@ -119,6 +126,7 @@ export default function InterCityDeliveryScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Enter name"
+                                placeholderTextColor="#999"
                                 value={delivery.name}
                                 onChangeText={(t) => setDelivery({ ...delivery, name: t })}
                             />
@@ -126,6 +134,7 @@ export default function InterCityDeliveryScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Enter phone"
+                                placeholderTextColor="#999"
                                 keyboardType="phone-pad"
                                 value={delivery.phone}
                                 onChangeText={(t) => setDelivery({ ...delivery, phone: t })}
@@ -145,6 +154,7 @@ export default function InterCityDeliveryScreen() {
                             <TextInput
                                 style={[styles.input, { height: 80, textAlignVertical: 'top', paddingTop: 12 }]}
                                 placeholder="Enter full address (Street, Area)"
+                                placeholderTextColor="#999"
                                 multiline
                                 value={delivery.address}
                                 onChangeText={(t) => setDelivery({ ...delivery, address: t })}
@@ -174,6 +184,7 @@ export default function InterCityDeliveryScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="e.g. 2.5"
+                                placeholderTextColor="#999"
                                 keyboardType="numeric"
                                 value={packageDetails.weight}
                                 onChangeText={(t) => setPackageDetails({ ...packageDetails, weight: t })}

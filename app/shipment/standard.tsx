@@ -14,8 +14,16 @@ export default function StandardDeliveryScreen() {
     const [packageDetails, setPackageDetails] = useState({ type: 'Parcel', weight: '', size: 'Small' });
     const [vehicleType, setVehicleType] = useState('Bike');
     const [dropOffType, setDropOffType] = useState<'pickup' | 'hub'>('pickup');
+    const [selectedHub, setSelectedHub] = useState('');
     const [showLocationPicker, setShowLocationPicker] = useState(false);
     const [locationPickerType, setLocationPickerType] = useState<'pickup' | 'delivery'>('pickup');
+
+    const hubs = [
+        { id: '1', name: 'Singon Hub - Thamel', address: 'Thamel, Kathmandu', phone: '+977 9800000001' },
+        { id: '2', name: 'Singon Hub - Patan', address: 'Lagankhel, Patan', phone: '+977 9800000002' },
+        { id: '3', name: 'Singon Hub - Bhaktapur', address: 'Durbar Square, Bhaktapur', phone: '+977 9800000003' },
+        { id: '4', name: 'Singon Hub - Pokhara', address: 'Lakeside, Pokhara', phone: '+977 9800000004' },
+    ];
 
     const totalSteps = 4;
 
@@ -52,7 +60,11 @@ export default function StandardDeliveryScreen() {
                     <View style={[styles.progressBar, { width: `${(step / totalSteps) * 100}%`, backgroundColor: Colors.light.primary }]} />
                 </View>
 
-                <ScrollView contentContainerStyle={GlobalStyles.container}>
+                <ScrollView
+                    contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
                     <Text style={styles.stepTitle}>
                         {step === 1 ? 'Pickup Details' :
                             step === 2 ? 'Delivery Details' :
@@ -87,6 +99,7 @@ export default function StandardDeliveryScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Enter name"
+                                placeholderTextColor="#999"
                                 value={pickup.name}
                                 onChangeText={(t) => setPickup({ ...pickup, name: t })}
                             />
@@ -95,6 +108,7 @@ export default function StandardDeliveryScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Enter phone"
+                                placeholderTextColor="#999"
                                 keyboardType="phone-pad"
                                 value={pickup.phone}
                                 onChangeText={(t) => setPickup({ ...pickup, phone: t })}
@@ -123,9 +137,47 @@ export default function StandardDeliveryScreen() {
                                 </>
                             )}
                             {dropOffType === 'hub' && (
-                                <View style={styles.hubInfo}>
-                                    <Text style={styles.hubText}>Please drop your parcel at the nearest Singon Hub.</Text>
-                                </View>
+                                <>
+                                    <Text style={styles.label}>Select Drop-off Hub</Text>
+                                    <View style={styles.hubsContainer}>
+                                        {hubs.map((hub) => (
+                                            <TouchableOpacity
+                                                key={hub.id}
+                                                style={[
+                                                    styles.hubCard,
+                                                    selectedHub === hub.id && styles.hubCardSelected
+                                                ]}
+                                                onPress={() => setSelectedHub(hub.id)}
+                                            >
+                                                <View style={styles.hubCardHeader}>
+                                                    <View style={styles.hubIconContainer}>
+                                                        <Text style={styles.hubIcon}>🏢</Text>
+                                                    </View>
+                                                    <View style={{ flex: 1 }}>
+                                                        <Text style={[
+                                                            styles.hubName,
+                                                            selectedHub === hub.id && styles.hubNameSelected
+                                                        ]}>
+                                                            {hub.name}
+                                                        </Text>
+                                                        <Text style={styles.hubAddress}>📍 {hub.address}</Text>
+                                                        <Text style={styles.hubPhone}>📞 {hub.phone}</Text>
+                                                    </View>
+                                                    {selectedHub === hub.id && (
+                                                        <View style={styles.checkmark}>
+                                                            <Text style={styles.checkmarkText}>✓</Text>
+                                                        </View>
+                                                    )}
+                                                </View>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </View>
+                                    <View style={styles.hubInfo}>
+                                        <Text style={styles.hubInfoText}>
+                                            ℹ️ Drop your parcel at the selected hub during business hours (9 AM - 6 PM)
+                                        </Text>
+                                    </View>
+                                </>
                             )}
                         </View>
                     )}
@@ -136,6 +188,7 @@ export default function StandardDeliveryScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Enter name"
+                                placeholderTextColor="#999"
                                 value={delivery.name}
                                 onChangeText={(t) => setDelivery({ ...delivery, name: t })}
                             />
@@ -143,6 +196,7 @@ export default function StandardDeliveryScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Enter phone"
+                                placeholderTextColor="#999"
                                 keyboardType="phone-pad"
                                 value={delivery.phone}
                                 onChangeText={(t) => setDelivery({ ...delivery, phone: t })}
@@ -213,6 +267,7 @@ export default function StandardDeliveryScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="e.g. 2.5"
+                                placeholderTextColor="#999"
                                 keyboardType="numeric"
                                 value={packageDetails.weight}
                                 onChangeText={(t) => setPackageDetails({ ...packageDetails, weight: t })}
@@ -413,6 +468,75 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderBottomWidth: 1,
         borderBottomColor: Colors.light.border,
+    },
+    confirmButton: {
+        marginTop: 20,
+    },
+    hubsContainer: {
+        gap: 12,
+        marginBottom: 16,
+    },
+    hubCard: {
+        backgroundColor: Colors.light.surface,
+        borderRadius: 12,
+        padding: 16,
+        borderWidth: 2,
+        borderColor: Colors.light.border,
+    },
+    hubCardSelected: {
+        borderColor: Colors.light.primary,
+        backgroundColor: '#E0F2F1',
+    },
+    hubCardHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
+    hubIconContainer: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: Colors.light.background,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    hubIcon: {
+        fontSize: 24,
+    },
+    hubName: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: Colors.light.text,
+        marginBottom: 4,
+    },
+    hubNameSelected: {
+        color: Colors.light.primary,
+    },
+    hubAddress: {
+        fontSize: 13,
+        color: '#666',
+        marginBottom: 2,
+    },
+    hubPhone: {
+        fontSize: 13,
+        color: '#666',
+    },
+    checkmark: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: Colors.light.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    checkmarkText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    hubInfoText: {
+        fontSize: 13,
+        color: '#0284C7',
     },
     backButton: {
         padding: 4,
