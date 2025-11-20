@@ -1,3 +1,4 @@
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -35,7 +36,7 @@ export default function HomeMovingScreen() {
             >
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => step > 1 ? setStep(step - 1) : router.back()} style={styles.backButton}>
-                        <Text style={{ fontSize: 24, color: Colors.light.text }}>←</Text>
+                        <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Home Moving</Text>
                     <View style={{ width: 24 }} />
@@ -87,13 +88,13 @@ export default function HomeMovingScreen() {
                                 }}
                             >
                                 <View style={styles.mapPickerContent}>
-                                    <Text style={styles.mapIcon}>📍</Text>
+                                    <Ionicons name="location" size={24} color={Colors.light.primary} style={{ marginRight: 12 }} />
                                     <View style={{ flex: 1 }}>
                                         <Text style={styles.mapPickerLabel}>
                                             {pickup.address || 'Tap to select location on map'}
                                         </Text>
                                     </View>
-                                    <Text style={styles.mapArrow}>›</Text>
+                                    <Ionicons name="chevron-forward" size={24} color="#999" />
                                 </View>
                             </TouchableOpacity>
 
@@ -103,7 +104,7 @@ export default function HomeMovingScreen() {
                                     <TextInput
                                         style={styles.input}
                                         placeholder="0"
-                                placeholderTextColor="#999"
+                                        placeholderTextColor="#999"
                                         keyboardType="numeric"
                                         value={pickup.floor}
                                         onChangeText={(t) => setPickup({ ...pickup, floor: t })}
@@ -158,13 +159,13 @@ export default function HomeMovingScreen() {
                                 }}
                             >
                                 <View style={styles.mapPickerContent}>
-                                    <Text style={styles.mapIcon}>📍</Text>
+                                    <Ionicons name="location" size={24} color={Colors.light.primary} style={{ marginRight: 12 }} />
                                     <View style={{ flex: 1 }}>
                                         <Text style={styles.mapPickerLabel}>
                                             {delivery.address || 'Tap to select location on map'}
                                         </Text>
                                     </View>
-                                    <Text style={styles.mapArrow}>›</Text>
+                                    <Ionicons name="chevron-forward" size={24} color="#999" />
                                 </View>
                             </TouchableOpacity>
 
@@ -174,7 +175,7 @@ export default function HomeMovingScreen() {
                                     <TextInput
                                         style={styles.input}
                                         placeholder="0"
-                                placeholderTextColor="#999"
+                                        placeholderTextColor="#999"
                                         keyboardType="numeric"
                                         value={delivery.floor}
                                         onChangeText={(t) => setDelivery({ ...delivery, floor: t })}
@@ -239,10 +240,10 @@ export default function HomeMovingScreen() {
                             <Text style={styles.label}>Vehicle Type</Text>
                             <View style={styles.row}>
                                 {[
-                                    { type: 'Pickup Truck', icon: '🛻' },
-                                    { type: 'Cargo Van', icon: '🚐' },
-                                    { type: 'Mini Truck', icon: '🚚' },
-                                    { type: 'Large Truck', icon: '🚛' }
+                                    { type: 'Pickup Truck', icon: 'car-pickup' },
+                                    { type: 'Cargo Van', icon: 'van-utility' },
+                                    { type: 'Mini Truck', icon: 'truck' },
+                                    { type: 'Large Truck', icon: 'truck-trailer' }
                                 ].map((v) => (
                                     <TouchableOpacity
                                         key={v.type}
@@ -253,7 +254,7 @@ export default function HomeMovingScreen() {
                                         onPress={() => setVehicleType(v.type)}
                                     >
                                         <Text style={[styles.chipText, vehicleType === v.type && { color: '#fff' }]}>
-                                            {v.icon} {v.type}
+                                            <MaterialCommunityIcons name={v.icon as any} size={20} color={vehicleType === v.type ? '#fff' : Colors.light.text} style={{ marginRight: 8 }} /> {v.type}
                                         </Text>
                                     </TouchableOpacity>
                                 ))}
@@ -311,7 +312,7 @@ export default function HomeMovingScreen() {
                         <View style={styles.modalHeader}>
                             <Text style={styles.modalTitle}>Select Location</Text>
                             <TouchableOpacity onPress={() => setShowLocationPicker(false)}>
-                                <Text style={{ fontSize: 24, color: Colors.light.text }}>×</Text>
+                                <Ionicons name="close" size={24} color={Colors.light.text} />
                             </TouchableOpacity>
                         </View>
 
@@ -376,7 +377,7 @@ export default function HomeMovingScreen() {
                         </View>
 
                         <View style={styles.locationInfo}>
-                            <Text style={styles.locationIcon}>📍</Text>
+                            <Ionicons name="location" size={32} color={Colors.light.primary} style={{ marginRight: 12 }} />
                             <Text style={styles.locationText}>
                                 {locationPickerType === 'pickup' ? pickup.address : delivery.address || 'No location selected'}
                             </Text>
@@ -423,7 +424,10 @@ export default function HomeMovingScreen() {
                                 }
                             }}
                         >
-                            <Text style={styles.locationButtonText}>📍 Use Current Location</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Ionicons name="location" size={20} color="#fff" style={{ marginRight: 8 }} />
+                                <Text style={styles.locationButtonText}>Use Current Location</Text>
+                            </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity

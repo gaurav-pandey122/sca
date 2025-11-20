@@ -1,11 +1,21 @@
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import { Colors } from '../../constants/Colors';
 import { GlobalStyles } from '../../constants/Styles';
+
+type SavedAddress = {
+    id: string;
+    label: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+};
 
 export default function CreateShipmentScreen() {
     const [step, setStep] = useState(1);
@@ -15,8 +25,96 @@ export default function CreateShipmentScreen() {
     const [vehicleType, setVehicleType] = useState('Bike');
     const [showLocationPicker, setShowLocationPicker] = useState(false);
     const [locationPickerType, setLocationPickerType] = useState<'pickup' | 'delivery'>('pickup');
+    const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+    const [showSavedAddresses, setShowSavedAddresses] = useState(false);
 
     const totalSteps = 4;
+
+    // Load saved addresses
+    useEffect(() => {
+        initializeMockAddresses();
+        loadSavedAddresses();
+    }, []);
+
+    const initializeMockAddresses = async () => {
+        try {
+            const existing = await AsyncStorage.getItem('@saved_addresses');
+            if (!existing) {
+                const mockAddresses: SavedAddress[] = [
+                    {
+                        id: '1',
+                        label: 'Home',
+                        address: 'Thamel, Kathmandu 44600, Nepal',
+                        latitude: 27.7172,
+                        longitude: 85.3240,
+                    },
+                    {
+                        id: '2',
+                        label: 'Office',
+                        address: 'Durbar Marg, Kathmandu 44600, Nepal',
+                        latitude: 27.7025,
+                        longitude: 85.3206,
+                    },
+                    {
+                        id: '3',
+                        label: 'Warehouse',
+                        address: 'Balaju, Kathmandu 44600, Nepal',
+                        latitude: 27.7350,
+                        longitude: 85.3000,
+                    },
+                    {
+                        id: '4',
+                        label: 'Shop',
+                        address: 'New Road, Kathmandu 44600, Nepal',
+                        latitude: 27.7040,
+                        longitude: 85.3100,
+                    },
+                    {
+                        id: '5',
+                        label: 'Parents House',
+                        address: 'Patan Dhoka, Lalitpur 44700, Nepal',
+                        latitude: 27.6710,
+                        longitude: 85.3240,
+                    },
+                ];
+                await AsyncStorage.setItem('@saved_addresses', JSON.stringify(mockAddresses));
+            }
+        } catch (error) {
+            console.error('Error initializing mock addresses:', error);
+        }
+    };
+
+    const loadSavedAddresses = async () => {
+        try {
+            const stored = await AsyncStorage.getItem('@saved_addresses');
+            if (stored) {
+                setSavedAddresses(JSON.parse(stored));
+            }
+        } catch (error) {
+            console.error('Error loading saved addresses:', error);
+        }
+    };
+
+    const handleSelectSavedAddress = (address: SavedAddress) => {
+        if (locationPickerType === 'pickup') {
+            setPickup({
+                name: address.label,
+                phone: '+977 9800000000', // Default phone
+                address: address.address,
+                lat: address.latitude,
+                lng: address.longitude,
+            });
+        } else {
+            setDelivery({
+                name: address.label,
+                phone: '+977 9800000000', // Default phone
+                address: address.address,
+                lat: address.latitude,
+                lng: address.longitude,
+            });
+        }
+        setShowSavedAddresses(false);
+    };
 
     const handleNext = () => {
         if (step < totalSteps) {
@@ -35,7 +133,7 @@ export default function CreateShipmentScreen() {
             >
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => step > 1 ? setStep(step - 1) : router.back()} style={styles.backButton}>
-                        <Text style={{ fontSize: 24, color: Colors.light.text }}>←</Text>
+                        <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Create Shipment</Text>
                     <View style={{ width: 24 }} />
@@ -47,7 +145,7 @@ export default function CreateShipmentScreen() {
                 </View>
 
                 <View style={{ backgroundColor: '#E0F2FE', padding: 12, margin: 16, borderRadius: 8, flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={{ marginRight: 8 }}>⚡</Text>
+                    <Ionicons name="flash" size={20} color="#0284C7" style={{ marginRight: 8 }} />
                     <Text style={{ color: '#0284C7', fontSize: 14, flex: 1 }}>
                         Express Delivery: Delivered within few hours.
                     </Text>
@@ -85,6 +183,17 @@ export default function CreateShipmentScreen() {
                                 onChangeText={(t) => setPickup({ ...pickup, phone: t })}
                             />
 
+                            {/* Select from Saved Addresses Button */}
+                            {savedAddresses.length > 0 && (
+                                <TouchableOpacity
+                                    style={styles.savedAddressButton}
+                                    onPress={() => setShowSavedAddresses(true)}
+                                >
+                                    <Ionicons name="bookmark-outline" size={20} color={Colors.light.primary} />
+                                    <Text style={styles.savedAddressButtonText}>Select from Saved Addresses</Text>
+                                </TouchableOpacity>
+                            )}
+
                             <Text style={styles.label}>Pickup Location</Text>
                             <TouchableOpacity
                                 style={styles.mapPickerButton}
@@ -94,13 +203,13 @@ export default function CreateShipmentScreen() {
                                 }}
                             >
                                 <View style={styles.mapPickerContent}>
-                                    <Text style={styles.mapIcon}>📍</Text>
+                                    <Ionicons name="location" size={24} color={Colors.light.primary} style={{ marginRight: 12 }} />
                                     <View style={{ flex: 1 }}>
                                         <Text style={styles.mapPickerLabel}>
                                             {pickup.address || 'Tap to select location on map'}
                                         </Text>
                                     </View>
-                                    <Text style={styles.mapArrow}>›</Text>
+                                    <Ionicons name="chevron-forward" size={24} color="#999" />
                                 </View>
                             </TouchableOpacity>
                         </View>
@@ -125,6 +234,21 @@ export default function CreateShipmentScreen() {
                                 value={delivery.phone}
                                 onChangeText={(t) => setDelivery({ ...delivery, phone: t })}
                             />
+
+                            {/* Select from Saved Addresses Button for Delivery */}
+                            {savedAddresses.length > 0 && (
+                                <TouchableOpacity
+                                    style={styles.savedAddressButton}
+                                    onPress={() => {
+                                        setLocationPickerType('delivery');
+                                        setShowSavedAddresses(true);
+                                    }}
+                                >
+                                    <Ionicons name="bookmark-outline" size={20} color={Colors.light.primary} />
+                                    <Text style={styles.savedAddressButtonText}>Select from Saved Addresses</Text>
+                                </TouchableOpacity>
+                            )}
+
                             <Text style={styles.label}>Delivery Location</Text>
                             <TouchableOpacity
                                 style={styles.mapPickerButton}
@@ -134,13 +258,13 @@ export default function CreateShipmentScreen() {
                                 }}
                             >
                                 <View style={styles.mapPickerContent}>
-                                    <Text style={styles.mapIcon}>📍</Text>
+                                    <Ionicons name="location" size={24} color={Colors.light.primary} style={{ marginRight: 12 }} />
                                     <View style={{ flex: 1 }}>
                                         <Text style={styles.mapPickerLabel}>
                                             {delivery.address || 'Tap to select location on map'}
                                         </Text>
                                     </View>
-                                    <Text style={styles.mapArrow}>›</Text>
+                                    <Ionicons name="chevron-forward" size={24} color="#999" />
                                 </View>
                             </TouchableOpacity>
                         </View>
@@ -151,10 +275,10 @@ export default function CreateShipmentScreen() {
                             <Text style={styles.label}>Vehicle Type</Text>
                             <View style={styles.row}>
                                 {[
-                                    { type: 'Bike', icon: '🏍️' },
-                                    { type: 'Pickup Truck', icon: '🛻' },
-                                    { type: 'Cargo Van', icon: '🚐' },
-                                    { type: 'Mini Truck', icon: '🚚' }
+                                    { type: 'Bike', icon: 'motorbike' },
+                                    { type: 'Pickup Truck', icon: 'car-pickup' },
+                                    { type: 'Cargo Van', icon: 'van-utility' },
+                                    { type: 'Mini Truck', icon: 'truck' }
                                 ].map((v) => (
                                     <TouchableOpacity
                                         key={v.type}
@@ -165,7 +289,7 @@ export default function CreateShipmentScreen() {
                                         onPress={() => setVehicleType(v.type)}
                                     >
                                         <Text style={[styles.chipText, vehicleType === v.type && { color: '#fff' }]}>
-                                            {v.icon} {v.type}
+                                            <MaterialCommunityIcons name={v.icon as any} size={20} color={vehicleType === v.type ? '#fff' : Colors.light.text} style={{ marginRight: 8 }} /> {v.type}
                                         </Text>
                                     </TouchableOpacity>
                                 ))}
@@ -247,7 +371,7 @@ export default function CreateShipmentScreen() {
                         <View style={styles.modalHeader}>
                             <Text style={styles.modalTitle}>Select Location</Text>
                             <TouchableOpacity onPress={() => setShowLocationPicker(false)}>
-                                <Text style={{ fontSize: 24, color: Colors.light.text }}>×</Text>
+                                <Ionicons name="close" size={24} color={Colors.light.text} />
                             </TouchableOpacity>
                         </View>
 
@@ -314,7 +438,7 @@ export default function CreateShipmentScreen() {
                         </View>
 
                         <View style={styles.locationInfo}>
-                            <Text style={styles.locationIcon}>📍</Text>
+                            <Ionicons name="location" size={32} color={Colors.light.primary} style={{ marginRight: 12 }} />
                             <Text style={styles.locationText}>
                                 {locationPickerType === 'pickup' ? pickup.address : delivery.address || 'No location selected'}
                             </Text>
@@ -361,7 +485,10 @@ export default function CreateShipmentScreen() {
                                 }
                             }}
                         >
-                            <Text style={styles.locationButtonText}>📍 Use Current Location</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Ionicons name="location" size={20} color="#fff" style={{ marginRight: 8 }} />
+                                <Text style={styles.locationButtonText}>Use Current Location</Text>
+                            </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -373,7 +500,52 @@ export default function CreateShipmentScreen() {
                     </View>
                 </View>
             </Modal>
-        </SafeAreaView>
+
+            {/* Saved Addresses Modal */}
+            <Modal
+                visible={showSavedAddresses}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setShowSavedAddresses(false)}
+            >
+                <View style={styles.savedAddressModalOverlay}>
+                    <View style={styles.savedAddressModalContent}>
+                        <View style={styles.savedAddressModalHeader}>
+                            <Text style={styles.savedAddressModalTitle}>Select Saved Address</Text>
+                            <TouchableOpacity onPress={() => setShowSavedAddresses(false)}>
+                                <Ionicons name="close" size={28} color={Colors.light.text} />
+                            </TouchableOpacity>
+                        </View>
+
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            {savedAddresses.length === 0 ? (
+                                <View style={styles.emptyState}>
+                                    <Ionicons name="bookmark-outline" size={48} color="#ccc" />
+                                    <Text style={styles.emptyStateText}>No saved addresses</Text>
+                                </View>
+                            ) : (
+                                savedAddresses.map((address) => (
+                                    <TouchableOpacity
+                                        key={address.id}
+                                        style={styles.savedAddressItem}
+                                        onPress={() => handleSelectSavedAddress(address)}
+                                    >
+                                        <View style={styles.savedAddressIconContainer}>
+                                            <Ionicons name="location" size={24} color={Colors.light.primary} />
+                                        </View>
+                                        <View style={styles.savedAddressInfo}>
+                                            <Text style={styles.savedAddressLabel}>{address.label}</Text>
+                                            <Text style={styles.savedAddressText}>{address.address}</Text>
+                                        </View>
+                                        <Ionicons name="chevron-forward" size={20} color="#999" />
+                                    </TouchableOpacity>
+                                ))
+                            )}
+                        </ScrollView>
+                    </View>
+                </View>
+            </Modal>
+        </SafeAreaView >
     );
 }
 
@@ -584,5 +756,85 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: '#fff',
+    },
+    savedAddressButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 12,
+        borderWidth: 1,
+        borderColor: Colors.light.primary,
+        borderRadius: 8,
+        marginBottom: 16,
+        backgroundColor: Colors.light.surface,
+    },
+    savedAddressButtonText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: Colors.light.primary,
+        marginLeft: 8,
+    },
+    savedAddressModalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'flex-end',
+    },
+    savedAddressModalContent: {
+        backgroundColor: Colors.light.background,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        padding: 24,
+        maxHeight: '80%',
+    },
+    savedAddressModalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    savedAddressModalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: Colors.light.text,
+    },
+    emptyState: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 40,
+    },
+    emptyStateText: {
+        fontSize: 16,
+        color: '#999',
+        marginTop: 12,
+    },
+    savedAddressItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 16,
+        backgroundColor: Colors.light.card,
+        borderRadius: 12,
+        marginBottom: 12,
+    },
+    savedAddressIconContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: Colors.light.primary + '15',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    savedAddressInfo: {
+        flex: 1,
+    },
+    savedAddressLabel: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: Colors.light.text,
+        marginBottom: 4,
+    },
+    savedAddressText: {
+        fontSize: 14,
+        color: '#666',
     },
 });

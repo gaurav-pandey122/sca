@@ -7,6 +7,7 @@ import { Colors } from '../../constants/Colors';
 
 type Order = {
     id: string;
+    type: string;
     status: string;
     pickup: string;
     delivery: string;
@@ -14,12 +15,13 @@ type Order = {
     date: string;
 };
 
-export default function OrdersScreen() {
+export default function HistoryScreen() {
     const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
 
     const mockOrders: Order[] = [
         {
             id: '88291',
+            type: 'Express Delivery',
             status: 'Active',
             pickup: '123 Main St, Kathmandu',
             delivery: '456 Park Ave, Lalitpur',
@@ -27,7 +29,26 @@ export default function OrdersScreen() {
             date: '2025-11-19',
         },
         {
+            id: '88290',
+            type: 'Standard Delivery',
+            status: 'Active',
+            pickup: 'Thamel, Kathmandu',
+            delivery: 'Patan Dhoka, Lalitpur',
+            price: 'Rs. 800',
+            date: '2025-11-19',
+        },
+        {
+            id: '88289',
+            type: 'Intercity',
+            status: 'Active',
+            pickup: 'Kathmandu Bus Park',
+            delivery: 'Pokhara Lakeside',
+            price: 'Rs. 3,500',
+            date: '2025-11-19',
+        },
+        {
             id: '88280',
+            type: 'Express Delivery',
             status: 'Delivered',
             pickup: '789 Broadway, Kathmandu',
             delivery: '321 5th Ave, Bhaktapur',
@@ -35,20 +56,58 @@ export default function OrdersScreen() {
             date: '2025-11-18',
         },
         {
-            id: '88270',
+            id: '88275',
+            type: 'House Moving',
             status: 'Delivered',
-            pickup: '555 Market St, Lalitpur',
-            delivery: '888 Ring Rd, Kathmandu',
-            price: 'Rs. 1,800',
+            pickup: 'Old Baneshwor, Kathmandu',
+            delivery: 'Imadol, Lalitpur',
+            price: 'Rs. 8,500',
             date: '2025-11-17',
         },
         {
+            id: '88270',
+            type: 'Vehicle Rent',
+            status: 'Delivered',
+            pickup: '555 Market St, Lalitpur',
+            delivery: '888 Ring Rd, Kathmandu',
+            price: 'Rs. 2,000',
+            date: '2025-11-17',
+        },
+        {
+            id: '88265',
+            type: 'Standard Delivery',
+            status: 'Delivered',
+            pickup: 'Durbar Marg, Kathmandu',
+            delivery: 'Jhamsikhel, Lalitpur',
+            price: 'Rs. 650',
+            date: '2025-11-16',
+        },
+        {
             id: '88260',
+            type: 'Intercity',
             status: 'Cancelled',
             pickup: '222 Temple Rd, Patan',
             delivery: '999 Lake Side, Pokhara',
             price: 'Rs. 2,500',
             date: '2025-11-16',
+        },
+        {
+            id: '88255',
+            type: 'House Moving',
+            status: 'Delivered',
+            pickup: 'Koteshwor, Kathmandu',
+            delivery: 'Sanepa, Lalitpur',
+            price: 'Rs. 12,000',
+            date: '2025-11-15',
+        },
+        {
+            id: '88250',
+            type: 'Vehicle Rent',
+            status: 'Delivered',
+            pickup: 'Baluwatar, Kathmandu',
+            delivery: 'Pulchowk, Lalitpur',
+            price: 'Rs. 4,000',
+            date: '2025-11-14',
         },
     ];
 
@@ -59,14 +118,14 @@ export default function OrdersScreen() {
         return true;
     });
 
-    const handleOrderPress = (orderId: string) => {
-        router.push(`/tracking/${orderId}`);
+    const handleOrderPress = (orderId: string, orderType: string) => {
+        router.push(`/tracking/${orderId}?type=${encodeURIComponent(orderType)}`);
     };
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.light.background }}>
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>My Orders</Text>
+                <Text style={styles.headerTitle}>History</Text>
             </View>
 
             {/* Filter Tabs */}
@@ -92,11 +151,12 @@ export default function OrdersScreen() {
                 renderItem={({ item }) => (
                     <OrderCard
                         id={item.id}
+                        type={item.type}
                         status={item.status}
                         pickup={item.pickup}
                         delivery={item.delivery}
                         price={item.price}
-                        onPress={() => handleOrderPress(item.id)}
+                        onPress={() => handleOrderPress(item.id, item.type)}
                     />
                 )}
                 ListEmptyComponent={

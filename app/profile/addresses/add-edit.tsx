@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
@@ -59,7 +60,7 @@ export default function AddEditAddressScreen() {
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.light.background }}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Text style={{ fontSize: 24, color: Colors.light.text }}>←</Text>
+                    <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>{isEdit ? 'Edit Address' : 'Add Address'}</Text>
                 <View style={{ width: 24 }} />
@@ -71,25 +72,28 @@ export default function AddEditAddressScreen() {
                     <TextInput
                         style={styles.input}
                         placeholder="e.g., Home, Work, Office"
+                        placeholderTextColor="#999"
                         value={label}
                         onChangeText={setLabel}
                     />
 
                     <Text style={styles.label}>Address</Text>
-                    <TouchableOpacity
-                        style={styles.mapPickerButton}
-                        onPress={() => setShowLocationPicker(true)}
-                    >
-                        <View style={styles.mapPickerContent}>
-                            <Text style={styles.mapIcon}>📍</Text>
-                            <View style={{ flex: 1 }}>
-                                <Text style={styles.mapPickerLabel}>
-                                    {address || 'Tap to select location on map'}
-                                </Text>
-                            </View>
-                            <Text style={styles.mapArrow}>›</Text>
-                        </View>
-                    </TouchableOpacity>
+                    <View style={styles.addressInputContainer}>
+                        <TextInput
+                            style={[styles.input, styles.addressInput]}
+                            placeholder="Enter address"
+                            placeholderTextColor="#999"
+                            value={address}
+                            onChangeText={setAddress}
+                            multiline
+                        />
+                        <TouchableOpacity
+                            style={styles.mapButton}
+                            onPress={() => setShowLocationPicker(true)}
+                        >
+                            <Ionicons name="location" size={24} color={Colors.light.primary} />
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 {isEdit && (
@@ -124,7 +128,7 @@ export default function AddEditAddressScreen() {
                         <View style={styles.modalHeader}>
                             <Text style={styles.modalTitle}>Select Location</Text>
                             <TouchableOpacity onPress={() => setShowLocationPicker(false)}>
-                                <Text style={{ fontSize: 24, color: Colors.light.text }}>×</Text>
+                                <Ionicons name="close" size={24} color={Colors.light.text} />
                             </TouchableOpacity>
                         </View>
 
@@ -189,7 +193,7 @@ export default function AddEditAddressScreen() {
                         </View>
 
                         <View style={styles.locationInfo}>
-                            <Text style={styles.locationIcon}>📍</Text>
+                            <Ionicons name="location" size={32} color={Colors.light.primary} style={{ marginRight: 12 }} />
                             <Text style={styles.locationText}>
                                 {address || 'No location selected'}
                             </Text>
@@ -223,7 +227,10 @@ export default function AddEditAddressScreen() {
                                 }
                             }}
                         >
-                            <Text style={styles.locationButtonText}>📍 Use Current Location</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Ionicons name="location" size={20} color="#fff" style={{ marginRight: 8 }} />
+                                <Text style={styles.locationButtonText}>Use Current Location</Text>
+                            </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -280,29 +287,36 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.light.surface,
         color: Colors.light.text,
     },
-    mapPickerButton: {
+    addressInputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    addressInput: {
+        flex: 1,
+        marginBottom: 0,
+        height: 'auto',
+        minHeight: 50,
+        paddingVertical: 12,
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
+        borderRightWidth: 0,
+    },
+    mapButton: {
+        height: 50, // Match input height (approx) - actually input is auto height but min 50
+        // To make it look attached, we can match the border and background
         borderWidth: 1,
         borderColor: Colors.light.border,
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 24,
+        borderTopRightRadius: 8,
+        borderBottomRightRadius: 8,
+        borderLeftWidth: 0, // Don't double up borders if we want them attached, or keep it if separated
         backgroundColor: Colors.light.surface,
-    },
-    mapPickerContent: {
-        flexDirection: 'row',
+        paddingHorizontal: 16,
+        justifyContent: 'center',
         alignItems: 'center',
     },
     mapIcon: {
         fontSize: 24,
-        marginRight: 12,
-    },
-    mapPickerLabel: {
-        fontSize: 14,
-        color: Colors.light.text,
-    },
-    mapArrow: {
-        fontSize: 24,
-        color: '#999',
     },
     deleteButton: {
         marginTop: 24,

@@ -1,6 +1,6 @@
 import { useFonts } from 'expo-font';
 import * as Location from 'expo-location';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { Slot, Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import { Alert, BackHandler } from 'react-native';
@@ -60,11 +60,7 @@ export default function RootLayout() {
     requestPermissions();
   }, []);
 
-  useEffect(() => {
-    if (loaded && permissionsGranted) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, permissionsGranted]);
+  // Splash screen is now hidden in RootNavigator after auth check
 
   if (!loaded || !permissionsGranted) {
     return null;
@@ -82,19 +78,27 @@ function RootNavigator() {
   const segments = useSegments();
   const router = useRouter();
 
+  const inAuthGroup = segments[0] === '(auth)';
+  const shouldRedirect = (!user && !inAuthGroup) || (user && inAuthGroup);
+
   useEffect(() => {
     if (isLoading) return;
 
-    const inAuthGroup = segments[0] === '(auth)';
-
-    if (!user && !inAuthGroup) {
-      // Redirect to login if not authenticated
-      router.replace('/(auth)/login');
-    } else if (user && inAuthGroup) {
-      // Redirect to tabs if already authenticated
-      router.replace('/(tabs)');
+    if (shouldRedirect) {
+      if (!user && !inAuthGroup) {
+        // Redirect to login if not authenticated
+        router.replace('/(auth)/login');
+      } else if (user && inAuthGroup) {
+        // Redirect to tabs if already authenticated
+        router.replace('/(tabs)');
+      }
+    } else {
+      // No redirect needed, hide splash screen
+      SplashScreen.hideAsync();
     }
-  }, [user, segments, isLoading]);
+  }, [user, segments, isLoading, shouldRedirect]);
+
+  if (isLoading || shouldRedirect) return <Slot />;
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

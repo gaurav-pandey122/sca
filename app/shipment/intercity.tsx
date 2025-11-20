@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -49,7 +50,7 @@ export default function InterCityDeliveryScreen() {
             >
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => step > 1 ? setStep(step - 1) : router.back()} style={styles.backButton}>
-                        <Text style={{ fontSize: 24, color: Colors.light.text }}>←</Text>
+                        <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Inter City Delivery</Text>
                     <View style={{ width: 24 }} />
@@ -57,7 +58,10 @@ export default function InterCityDeliveryScreen() {
 
                 {/* Info Banner */}
                 <View style={styles.infoBanner}>
-                    <Text style={styles.infoText}>ℹ️ Delivery takes 4-8 business days</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Ionicons name="information-circle-outline" size={16} color="#B45309" style={{ marginRight: 6 }} />
+                        <Text style={styles.infoText}>Delivery takes 4-8 business days</Text>
+                    </View>
                 </View>
 
                 {/* Progress Bar */}
@@ -105,7 +109,7 @@ export default function InterCityDeliveryScreen() {
                                 <Text style={[styles.dropdownText, !pickup.city && { color: '#999' }]}>
                                     {pickup.city || 'Select City'}
                                 </Text>
-                                <Text style={styles.dropdownIcon}>▼</Text>
+                                <Ionicons name="chevron-down" size={20} color="#999" />
                             </TouchableOpacity>
 
                             <Text style={styles.label}>Pickup Address</Text>
@@ -147,7 +151,7 @@ export default function InterCityDeliveryScreen() {
                                 <Text style={[styles.dropdownText, !delivery.city && { color: '#999' }]}>
                                     {delivery.city || 'Select City'}
                                 </Text>
-                                <Text style={styles.dropdownIcon}>▼</Text>
+                                <Ionicons name="chevron-down" size={20} color="#999" />
                             </TouchableOpacity>
 
                             <Text style={styles.label}>Delivery Address</Text>
@@ -239,7 +243,7 @@ export default function InterCityDeliveryScreen() {
                         <View style={styles.modalHeader}>
                             <Text style={styles.modalTitle}>Select City</Text>
                             <TouchableOpacity onPress={() => setShowCityPicker(false)}>
-                                <Text style={{ fontSize: 24, color: Colors.light.text }}>×</Text>
+                                <Ionicons name="close" size={24} color={Colors.light.text} />
                             </TouchableOpacity>
                         </View>
                         <FlatList

@@ -5,6 +5,7 @@ import { GlobalStyles } from '../constants/Styles';
 
 type OrderCardProps = {
     id: string;
+    type: string;
     status: string;
     pickup: string;
     delivery: string;
@@ -12,7 +13,7 @@ type OrderCardProps = {
     onPress: () => void;
 };
 
-export default function OrderCard({ id, status, pickup, delivery, price, onPress }: OrderCardProps) {
+export default function OrderCard({ id, type, status, pickup, delivery, price, onPress }: OrderCardProps) {
     const scaleAnim = React.useRef(new Animated.Value(1)).current;
 
     const getStatusColor = (status: string) => {
@@ -50,7 +51,10 @@ export default function OrderCard({ id, status, pickup, delivery, price, onPress
                 activeOpacity={0.9}
             >
                 <View style={[styles.header, { borderBottomColor: Colors.light.border }]}>
-                    <Text style={styles.orderId}>Order #{id}</Text>
+                    <View>
+                        <Text style={styles.orderType}>{type}</Text>
+                        <Text style={styles.orderId}>Order #{id}</Text>
+                    </View>
                     <View style={[styles.statusBadge, { backgroundColor: getStatusColor(status) + '15' }]}>
                         <Text style={[styles.statusText, { color: getStatusColor(status) }]}>{status}</Text>
                     </View>
@@ -96,6 +100,12 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontSize: 17,
         color: Colors.light.text,
+    },
+    orderType: {
+        fontSize: 12,
+        color: '#666',
+        fontWeight: '600',
+        marginBottom: 2,
     },
     statusBadge: {
         paddingHorizontal: 10,

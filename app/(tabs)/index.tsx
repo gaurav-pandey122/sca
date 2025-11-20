@@ -153,33 +153,23 @@ export default function DashboardScreen() {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Active Orders</Text>
-              <TouchableOpacity onPress={() => router.push('/(tabs)/orders')}>
+              <TouchableOpacity onPress={() => router.push('/(tabs)/history')}>
                 <Text style={styles.seeAll}>See All</Text>
               </TouchableOpacity>
             </View>
 
             <OrderCard
               id="88291"
+              type="Express Delivery"
               status="Active"
               pickup="123 Main St, New York"
               delivery="456 Park Ave, New York"
               price="Rs. 1,500"
-              onPress={() => router.push('/tracking/88291')}
+              onPress={() => router.push(`/tracking/88291?type=${encodeURIComponent('Express Delivery')}`)}
             />
           </View>
 
-          {/* Recent Orders */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Recent Activity</Text>
-            <OrderCard
-              id="88280"
-              status="Delivered"
-              pickup="789 Broadway, New York"
-              delivery="321 5th Ave, New York"
-              price="Rs. 1,250"
-              onPress={() => router.push('/tracking/88280')}
-            />
-          </View>
+
         </ScrollView>
       </Animated.View>
 

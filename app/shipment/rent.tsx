@@ -1,6 +1,8 @@
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/Colors';
 import { GlobalStyles } from '../../constants/Styles';
@@ -9,7 +11,17 @@ export default function RentVehicleScreen() {
     const [step, setStep] = useState(1);
     const [vehicleType, setVehicleType] = useState('Pickup Truck');
     const [duration, setDuration] = useState('1 Day');
-    const [startDate, setStartDate] = useState('');
+    const [startDate, setStartDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+
+    const onDateChange = (event: any, selectedDate?: Date) => {
+        const currentDate = selectedDate || startDate;
+        setShowDatePicker(Platform.OS === 'ios');
+        setStartDate(currentDate);
+        if (Platform.OS !== 'ios') {
+            setShowDatePicker(false);
+        }
+    };
 
     const totalSteps = 2;
 
@@ -52,7 +64,7 @@ export default function RentVehicleScreen() {
             >
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => step > 1 ? setStep(step - 1) : router.back()} style={styles.backButton}>
-                        <Text style={{ fontSize: 24, color: Colors.light.text }}>←</Text>
+                        <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Rent Vehicle</Text>
                     <View style={{ width: 24 }} />
@@ -77,10 +89,10 @@ export default function RentVehicleScreen() {
                             <Text style={styles.label}>Vehicle Type</Text>
                             <View style={styles.row}>
                                 {[
-                                    { type: 'Pickup Truck', icon: '🛻' },
-                                    { type: 'Cargo Van', icon: '🚐' },
-                                    { type: 'Mini Truck', icon: '🚚' },
-                                    { type: 'Large Truck', icon: '🚛' }
+                                    { type: 'Pickup Truck', icon: 'car-pickup' },
+                                    { type: 'Cargo Van', icon: 'van-utility' },
+                                    { type: 'Mini Truck', icon: 'truck' },
+                                    { type: 'Large Truck', icon: 'truck-trailer' }
                                 ].map((v) => (
                                     <TouchableOpacity
                                         key={v.type}
@@ -91,7 +103,7 @@ export default function RentVehicleScreen() {
                                         onPress={() => setVehicleType(v.type)}
                                     >
                                         <Text style={[styles.chipText, vehicleType === v.type && { color: '#fff' }]}>
-                                            {v.icon} {v.type}
+                                            <MaterialCommunityIcons name={v.icon as any} size={20} color={vehicleType === v.type ? '#fff' : Colors.light.text} style={{ marginRight: 8 }} /> {v.type}
                                         </Text>
                                     </TouchableOpacity>
                                 ))}
@@ -114,13 +126,26 @@ export default function RentVehicleScreen() {
                             </View>
 
                             <Text style={styles.label}>Start Date</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="YYYY-MM-DD"
-                                placeholderTextColor="#999"
-                                value={startDate}
-                                onChangeText={setStartDate}
-                            />
+                            <TouchableOpacity
+                                style={styles.dateButton}
+                                onPress={() => setShowDatePicker(true)}
+                            >
+                                <Text style={styles.dateButtonText}>
+                                    {startDate.toLocaleDateString()}
+                                </Text>
+                                <Ionicons name="calendar" size={24} color={Colors.light.text} />
+                            </TouchableOpacity>
+                            {showDatePicker && (
+                                <DateTimePicker
+                                    testID="dateTimePicker"
+                                    value={startDate}
+                                    mode="date"
+                                    is24Hour={true}
+                                    display="default"
+                                    onChange={onDateChange}
+                                    minimumDate={new Date()}
+                                />
+                            )}
                         </View>
                     )}
 
@@ -130,7 +155,7 @@ export default function RentVehicleScreen() {
                                 <Text style={styles.summaryTitle}>Rental Details</Text>
                                 <Text>Vehicle: {vehicleType}</Text>
                                 <Text>Duration: {duration}</Text>
-                                <Text>Start Date: {startDate || 'Not specified'}</Text>
+                                <Text>Start Date: {startDate.toLocaleDateString()}</Text>
                             </View>
 
                             <View style={styles.priceContainer}>
@@ -259,5 +284,21 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         color: Colors.light.primary,
+    },
+    dateButton: {
+        height: 56,
+        borderWidth: 1,
+        borderColor: Colors.light.border,
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        marginBottom: 24,
+        backgroundColor: Colors.light.surface,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    dateButtonText: {
+        fontSize: 16,
+        color: Colors.light.text,
     },
 });
